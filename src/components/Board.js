@@ -1,33 +1,33 @@
-
 import React ,{useEffect,useState} from "react";
-
 
 export default function Board({GridSize})
 {
-	const initGrid=[...Array(GridSize)].map(()=>
-	[...Array(GridSize)].fill(0));
+	let initGrid=[...Array(GridSize)].map(()=>[...Array(GridSize).fill(0)]);
 
-	initGrid[4][2]=2;
-	initGrid[4][0]=4;
+	initGrid[2][0]=2;
+	initGrid[2][2]=4;
 
-	const [grid ,setGrid]=useState(initGrid);
+	const [grid ,setGrid]=useState([...initGrid]);
+  const [gameOver, setGameOver]=useState(false);
+  const [score,setScore]=useState(0);
 
-  const shift =(row)=>{
-    const arr=row.filter(val=>val);
+  // const shift =(row)=>{
+  //   const arr=row.filter(val=>val);
 
-    const zeroCount=row.length-arr.length;
-    const zeros =[...Array(zeroCount)];
-    arr=arr.append(zeros);
-    return arr;
-  }
+  //   const zeroCount=row.length-arr.length;
+  //   const zeros =[...Array(zeroCount)];
+  //   arr=arr.append(zeros);
+  //   return arr;
+  // }
 
   	const addNewNumber=(gridCopy )=>{
-	            let freeSpace=[];
+	            let freeSpaces=[];
+
               	for(let i=0;i<GridSize;i++){
  	                  for(let j=0;j<GridSize;j++){
                         	if(grid[i][j]===0)
 	                        {
-	                          freeSpaces.push({row:i, col:j});
+	                          freeSpaces.push({row: i, col: j});
 	                        }
 	                  }
  	              }
@@ -59,13 +59,13 @@ export default function Board({GridSize})
       
       
           const rightShift=()=>{
-            const gridCopy= [...grid];
+            let gridCopy= [...grid];
             //console.table(gridCopy);
             gridCopy=gridCopy.map((row)=>{
-              let rowcopy=shift('right',row);
-              merge(rowCopy);
-              rowcopy=shiftAll('right',row);
-      
+              let rowCopy=[...row];
+              rowCopy=shiftAll('right',[...rowCopy]);
+              mergeRight(rowCopy);
+              rowCopy=shiftAll('right',[...rowCopy]);
               return rowCopy;
             });
       
@@ -89,6 +89,38 @@ export default function Board({GridSize})
             addNewNumber(gridCopy);
           }
 
+          const topShift=()=>{
+            let gridCopy=transpose(grid);
+    
+            gridCopy=gridCopy.map((row)=>{
+              let rowCopy=[...row];
+              rowCopy=shiftAll('left',[...rowCopy]);
+              mergeLeft(rowCopy);
+              rowCopy=shiftAll('left',[...rowCopy]);
+              return rowCopy;
+            });
+            addNewNumber(transpose(gridCopy));
+          };
+
+
+          const shiftAll=(direction,row)=>{
+            let arr=row.filter((val)=>val);
+              //[0 2 0 4 5]
+              //[2 4 5]
+            //console.log(arr);
+            let missing =GridSize-arr.length;
+            let zeros=Array(missing).fill(0);
+            //[0 0]
+            switch(direction){
+              case 'right':
+                arr=zeros.concat(arr);
+                return arr;
+          
+              case 'left':
+                arr=arr.concat(zeros);
+                return arr;
+            }
+          };
 
          
           const mergeRight=(row)=>{
@@ -134,61 +166,14 @@ export default function Board({GridSize})
                           }
                     }
                };
-         
+              
 
-               const topShift=()=>{
-                let gridCopy=transpose(grid);
-        
-                gridCopy=gridCopy.map((row)=>{
-                  let rowCopy=[...row];
-                  rowCopy=shiftAll('left',[...rowCopy]);
-                  mergeLeft(rowCopy);
-                  rowCopy=shiftAll('left',[...rowCopy]);
-                  return rowCopy;
-                });
-                addNewNumber(transpose(gridCopy));
-              };
-    
-
-
-
-
-const shiftAll=(direction,row)=>{
-  let arr=row.filter((val)=>val);
-    //[0 2 0 4 5]
-    //[2 4 5]
-  //console.log(arr);
-  let missing =GridSize-arr.length;
-  let zeros=Array(missing).fill(0);
-  //[0 0]
-  switch(direction){
-    case 'right':
-      arr=zeros.concat(arr);
-      return arr;
-
-    case 'left':
-      arr=arr.concat(zeros);
-      return arr;
-  }
-};
-
-
-
-
-
-
-const transpose =(array)=>{
+ const transpose =(array)=>{
   return array.map((_,colIndex)=>array.map((row)=>row[colIndex]));
-};
+   };
 
-
-  
   const handleKeydownEvent=(event)=>{
     event.preventDefault();
-    //addNewNumber();
-    // if(gameOver){
-    //   return;
-    // }
     const {code}=event;
     switch(code){
       case 'ArrowUp':
@@ -213,7 +198,7 @@ const transpose =(array)=>{
 	{
 	window.addEventListener('keydown', handleKeydownEvent,false);
   return ()=>{
-    window.removeEventListener('keydown',handleKeydownEvent,);
+    window.removeEventListener('keydown',handleKeydownEvent,false);
   };
 	},[grid]);
 
@@ -240,9 +225,7 @@ const transpose =(array)=>{
         })}
     </div>
   </div>
-  );
-        
-        
+  );       
 }
 
 
