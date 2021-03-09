@@ -11,15 +11,6 @@ export default function Board({GridSize})
   const [gameOver, setGameOver]=useState(false);
   const [score,setScore]=useState(0);
 
-  // const shift =(row)=>{
-  //   const arr=row.filter(val=>val);
-
-  //   const zeroCount=row.length-arr.length;
-  //   const zeros =[...Array(zeroCount)];
-  //   arr=arr.append(zeros);
-  //   return arr;
-  // }
-
   	const addNewNumber=(gridCopy )=>{
 	            let freeSpaces=[];
 
@@ -174,6 +165,9 @@ export default function Board({GridSize})
 
   const handleKeydownEvent=(event)=>{
     event.preventDefault();
+    if(gameOver){
+      return ;
+    }
     const {code}=event;
     switch(code){
       case 'ArrowUp':
