@@ -142,23 +142,7 @@ export default function Board({GridSize})
             setScore(score+netScoreAdd);
           };
       
-             const merge=(row)=>{
-               //[0 2 2 0 8]
-               //[0 0 4 0 8]
-      
-               //[0 2 0 2 2]
-               //[0 2 0 0 4]
-                   for(let i=GridSize-1;i>0;i--){
-                         let a=row[i];
-                         let b=row[i-1];
-                          if(a!=b && a===b){
-                          row[i]=a+b;
-                          row[i-1]=0;
-                          }
-                    }
-               };
-              
-
+            
  const transpose =(array)=>{
   return array.map((_,colIndex)=>array.map((row)=>row[colIndex]));
    };
